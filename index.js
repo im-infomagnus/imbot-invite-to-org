@@ -16,12 +16,15 @@ const main = async () => {
     }
     const octokit = github.getOctokit(INVITE_TOKEN);
 
-
-    // The issue body contains the user.login 
-    //  which we need to convert to user.id
+    // The issue body contains the user.login...
     const inviteeLogin = payload.issue.body;
-    const inviteeId = octokit.user(inviteeLogin).id;
-    // const inviteeId = payload.issue.user.id;
+
+    // ... which we need to convert to user.id
+    const {data: userRequest} = await octokit.users.getByUsername({
+      username: inviteeLogin,
+    });
+    const inviteeId = userRequest.id;
+    
     const currentLabel = payload.label.name;
 
     const org = core.getInput('organization', { required: true });
